@@ -1,0 +1,88 @@
+<Window x:Class="CGCLauncher.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        Title="CGCLauncher" Height="560" Width="680" MinHeight="480" MinWidth="600"
+        WindowStyle="None" AllowsTransparency="False" ResizeMode="CanResize"
+        Background="{StaticResource VoidBrush}">
+
+    <shell:WindowChrome.WindowChrome>
+        <shell:WindowChrome CaptionHeight="0" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0"/>
+    </shell:WindowChrome.WindowChrome>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Custom title bar -->
+        <Border Grid.Row="0" Background="{StaticResource PanelHeaderBrush}"
+                BorderBrush="{StaticResource BronzeBrush}" BorderThickness="0,0,0,2"
+                MouseLeftButtonDown="TitleBar_MouseLeftButtonDown">
+            <Grid Margin="18,0">
+                <TextBlock Text="C G C L A U N C H E R" FontFamily="Consolas" FontWeight="Bold" FontSize="14"
+                           Foreground="{StaticResource GoldBrush}" VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Content="Sign in with Microsoft" Style="{StaticResource ThemedButtonStyle}" FontSize="12"
+                            Margin="0,0,8,0" Click="SignInButton_Click" shell:WindowChrome.IsHitTestVisibleInChrome="True"/>
+                    <Button Content="&#x2014;" Style="{StaticResource TitleBarButtonStyle}" Click="MinimizeButton_Click" shell:WindowChrome.IsHitTestVisibleInChrome="True"/>
+                    <Button Content="&#x25A1;" Style="{StaticResource TitleBarButtonStyle}" Click="MaximizeButton_Click" shell:WindowChrome.IsHitTestVisibleInChrome="True"/>
+                    <Button Content="&#x2715;" Style="{StaticResource TitleBarCloseButtonStyle}" Click="CloseButton_Click" shell:WindowChrome.IsHitTestVisibleInChrome="True"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Body -->
+        <Grid Grid.Row="1" Margin="28,20,28,16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,18">
+                <ComboBox x:Name="VersionComboBox" Style="{StaticResource PillComboBoxStyle}" Width="200"
+                          DisplayMemberPath="Id" Margin="0,0,10,0"/>
+                <CheckBox x:Name="ShowSnapshotsCheckBox" Content="Show snapshots" Style="{StaticResource ThemedCheckBoxStyle}"
+                          VerticalAlignment="Center" Margin="0,0,16,0"
+                          Checked="ShowSnapshotsCheckBox_Changed" Unchecked="ShowSnapshotsCheckBox_Changed"/>
+                <TextBox x:Name="UsernameTextBox" Style="{StaticResource PillTextBoxStyle}" Width="140" Text="Player"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="1" HorizontalAlignment="Center" Margin="0,4,0,22">
+                <Button x:Name="LaunchButton" Style="{StaticResource GemButtonStyle}" Click="LaunchButton_Click"/>
+                <TextBlock Text="Launch" Foreground="{StaticResource ParchmentBrush}" FontSize="14" FontWeight="Medium"
+                           HorizontalAlignment="Center" Margin="0,12,0,2"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBox x:Name="InstallDirTextBox" Style="{StaticResource PillTextBoxStyle}" Width="280"
+                             IsReadOnly="True" FontSize="11" Foreground="{StaticResource MutedSlateBrush}"/>
+                    <Button Content="Browse" Margin="8,0,0,0" Style="{StaticResource ThemedButtonStyle}" Click="BrowseButton_Click"/>
+                </StackPanel>
+            </StackPanel>
+
+            <Border Grid.Row="2" Background="{StaticResource ConsoleBrush}" CornerRadius="6" Padding="14,10">
+                <TextBox x:Name="LogTextBox" IsReadOnly="True" Background="Transparent" BorderThickness="0"
+                         Foreground="{StaticResource ConsoleTextBrush}" FontFamily="Consolas" FontSize="12"
+                         TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+            </Border>
+        </Grid>
+
+        <!-- Auth-state banner: honest about Demo Mode until OAuth (milestone 2) lands -->
+        <Border Grid.Row="2" Background="{StaticResource WarningBgBrush}" Padding="22,9">
+            <TextBlock Text="Offline mode — launches in Demo Mode. Sign in with Microsoft to unlock the full game."
+                       Foreground="{StaticResource GoldBrush}" FontSize="12"/>
+        </Border>
+
+        <!-- Decorative corner brackets, echoing the server icon's frame -->
+        <Border Grid.RowSpan="3" IsHitTestVisible="False" Margin="6" HorizontalAlignment="Left" VerticalAlignment="Top"
+                Width="14" Height="14" BorderBrush="{StaticResource BronzeBrush}" BorderThickness="3,3,0,0"/>
+        <Border Grid.RowSpan="3" IsHitTestVisible="False" Margin="6" HorizontalAlignment="Right" VerticalAlignment="Top"
+                Width="14" Height="14" BorderBrush="{StaticResource BronzeBrush}" BorderThickness="0,3,3,0"/>
+        <Border Grid.RowSpan="3" IsHitTestVisible="False" Margin="6" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                Width="14" Height="14" BorderBrush="{StaticResource BronzeBrush}" BorderThickness="3,0,0,3"/>
+        <Border Grid.RowSpan="3" IsHitTestVisible="False" Margin="6" HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                Width="14" Height="14" BorderBrush="{StaticResource BronzeBrush}" BorderThickness="0,0,3,3"/>
+    </Grid>
+</Window>
