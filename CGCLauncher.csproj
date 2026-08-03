@@ -9,6 +9,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <LangVersion>latest</LangVersion>
+    <ApplicationIcon>Assets/logo.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets/logo.ico" />
+    <Resource Include="Assets/logo.png" />
+    <Resource Include="Assets/VT323-Regular.ttf" />
+  </ItemGroup>
+
 
 </Project>

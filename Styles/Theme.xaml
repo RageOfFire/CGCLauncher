@@ -1,155 +1,120 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- Palette, pulled from the server icon -->
-    <SolidColorBrush x:Key="VoidBrush" Color="#14171F"/>
-    <SolidColorBrush x:Key="StoneBrush" Color="#1F2430"/>
-    <SolidColorBrush x:Key="StoneDarkBrush" Color="#191D28"/>
-    <SolidColorBrush x:Key="PanelHeaderBrush" Color="#1B2030"/>
-    <SolidColorBrush x:Key="ConsoleBrush" Color="#0E1018"/>
-    <SolidColorBrush x:Key="BronzeBrush" Color="#5A3D24"/>
-    <SolidColorBrush x:Key="GoldBrush" Color="#F0A93E"/>
-    <SolidColorBrush x:Key="EmberBrush" Color="#FF6B2B"/>
-    <SolidColorBrush x:Key="EmberHoverBrush" Color="#FF8142"/>
-    <SolidColorBrush x:Key="EmberPressedBrush" Color="#D9551C"/>
-    <SolidColorBrush x:Key="ParchmentBrush" Color="#EDE3D3"/>
-    <SolidColorBrush x:Key="MutedSlateBrush" Color="#8B93A6"/>
-    <SolidColorBrush x:Key="PillBrush" Color="#232838"/>
-    <SolidColorBrush x:Key="WarningBgBrush" Color="#3A2A12"/>
-    <SolidColorBrush x:Key="ConsoleTextBrush" Color="#B5A887"/>
+    <!-- ===================== FONTS ===================== -->
+    <FontFamily x:Key="PixelFont">pack://application:,,,/Assets/VT323-Regular.ttf#VT323</FontFamily>
 
-    <!-- Title bar buttons (minimize / maximize) -->
+    <!-- ===================== PALETTE ===================== -->
+    <SolidColorBrush x:Key="VoidBrush"        Color="#14171F"/>
+    <SolidColorBrush x:Key="StoneMidBrush"    Color="#4A4F5C"/>
+    <SolidColorBrush x:Key="StoneDarkBrush"   Color="#2E3240"/>
+    <SolidColorBrush x:Key="MortarBrush"      Color="#1E2130"/>
+    <SolidColorBrush x:Key="WoodBrush"        Color="#6B4423"/>
+    <SolidColorBrush x:Key="WoodDarkBrush"    Color="#4A2E15"/>
+    <SolidColorBrush x:Key="WoodLightBrush"   Color="#8B5E34"/>
+    <SolidColorBrush x:Key="ParchmentBrush"   Color="#E8D9A0"/>
+    <SolidColorBrush x:Key="ParchmentDarkBrush" Color="#C9BC7A"/>
+    <SolidColorBrush x:Key="GoldBrush"        Color="#F0A93E"/>
+    <SolidColorBrush x:Key="GoldDarkBrush"    Color="#B87820"/>
+    <SolidColorBrush x:Key="EmberBrush"       Color="#FF6B2B"/>
+    <SolidColorBrush x:Key="AmberBrush"       Color="#FFC107"/>
+    <SolidColorBrush x:Key="AmberDarkBrush"   Color="#3A2A00"/>
+    <SolidColorBrush x:Key="DarkTextBrush"    Color="#1A1208"/>
+    <SolidColorBrush x:Key="MutedBrush"       Color="#8B93A6"/>
+    <SolidColorBrush x:Key="ConsoleBgBrush"   Color="#D9C87A"/>
+
+    <!-- ===================== STONE BRICK TILE ===================== -->
+    <!-- Two-row brick offset tile, rendered purely in XAML geometry -->
+    <DrawingBrush x:Key="StoneBrickBrush" TileMode="Tile" Viewport="0,0,64,32" ViewportUnits="Absolute">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <!-- Base fill -->
+                <GeometryDrawing Brush="#3A3F4E">
+                    <GeometryDrawing.Geometry>
+                        <RectangleGeometry Rect="0,0,64,32"/>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <!-- Row 1 bricks -->
+                <GeometryDrawing Brush="#454A5A">
+                    <GeometryDrawing.Geometry>
+                        <GeometryGroup>
+                            <RectangleGeometry Rect="1,1,30,13"/>
+                            <RectangleGeometry Rect="33,1,30,13"/>
+                        </GeometryGroup>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <!-- Row 2 bricks offset by half -->
+                <GeometryDrawing Brush="#424756">
+                    <GeometryDrawing.Geometry>
+                        <GeometryGroup>
+                            <RectangleGeometry Rect="1,17,14,13"/>
+                            <RectangleGeometry Rect="17,17,30,13"/>
+                            <RectangleGeometry Rect="49,17,14,13"/>
+                        </GeometryGroup>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <!-- Subtle highlight edges on row 1 -->
+                <GeometryDrawing Brush="#52576A">
+                    <GeometryDrawing.Geometry>
+                        <GeometryGroup>
+                            <RectangleGeometry Rect="1,1,30,1"/>
+                            <RectangleGeometry Rect="33,1,30,1"/>
+                            <RectangleGeometry Rect="1,1,1,13"/>
+                            <RectangleGeometry Rect="33,1,1,13"/>
+                        </GeometryGroup>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <!-- Subtle highlight edges on row 2 -->
+                <GeometryDrawing Brush="#4E5368">
+                    <GeometryDrawing.Geometry>
+                        <GeometryGroup>
+                            <RectangleGeometry Rect="1,17,14,1"/>
+                            <RectangleGeometry Rect="17,17,30,1"/>
+                            <RectangleGeometry Rect="49,17,14,1"/>
+                        </GeometryGroup>
+                    </GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <!-- ===================== WOOD PLANK TILE ===================== -->
+    <DrawingBrush x:Key="WoodPlankBrush" TileMode="Tile" Viewport="0,0,8,16" ViewportUnits="Absolute">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="#6B4423">
+                    <GeometryDrawing.Geometry><RectangleGeometry Rect="0,0,8,16"/></GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <!-- plank grain line -->
+                <GeometryDrawing Brush="#5A3819">
+                    <GeometryDrawing.Geometry><RectangleGeometry Rect="0,15,8,1"/></GeometryDrawing.Geometry>
+                </GeometryDrawing>
+                <!-- highlight -->
+                <GeometryDrawing Brush="#7A5030">
+                    <GeometryDrawing.Geometry><RectangleGeometry Rect="0,0,8,1"/></GeometryDrawing.Geometry>
+                </GeometryDrawing>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <!-- ===================== TITLE BAR BUTTONS ===================== -->
     <Style x:Key="TitleBarButtonStyle" TargetType="Button">
-        <Setter Property="Width" Value="40"/>
-        <Setter Property="Height" Value="32"/>
+        <Setter Property="Width" Value="36"/>
+        <Setter Property="Height" Value="28"/>
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{StaticResource MutedSlateBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource ParchmentBrush}"/>
         <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontFamily" Value="{StaticResource PixelFont}"/>
+        <Setter Property="FontSize" Value="16"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}">
+                    <Border x:Name="Bg" Background="{TemplateBinding Background}">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="{StaticResource StoneDarkBrush}"/>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
-    <!-- Title bar close button - reddens on hover instead of just darkening -->
-    <Style x:Key="TitleBarCloseButtonStyle" TargetType="Button">
-        <Setter Property="Width" Value="40"/>
-        <Setter Property="Height" Value="32"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{StaticResource MutedSlateBrush}"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border Background="{TemplateBinding Background}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#C0392B"/>
-                <Setter Property="Foreground" Value="White"/>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
-
-    <!-- Pill-shaped text box (username, install dir) -->
-    <Style x:Key="PillTextBoxStyle" TargetType="TextBox">
-        <Setter Property="Background" Value="{StaticResource PillBrush}"/>
-        <Setter Property="Foreground" Value="{StaticResource ParchmentBrush}"/>
-        <Setter Property="CaretBrush" Value="{StaticResource ParchmentBrush}"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Padding" Value="14,7"/>
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="TextBox">
-                    <Border Background="{TemplateBinding Background}" CornerRadius="14" Padding="{TemplateBinding Padding}">
-                        <ScrollViewer x:Name="PART_ContentHost"/>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <!-- Pill-shaped combo box (version picker) -->
-    <Style x:Key="ComboBoxToggleButtonStyle" TargetType="ToggleButton">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ToggleButton">
-                    <Border Background="{StaticResource PillBrush}" CornerRadius="14"/>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style x:Key="PillComboBoxStyle" TargetType="ComboBox">
-        <Setter Property="Background" Value="{StaticResource PillBrush}"/>
-        <Setter Property="Foreground" Value="{StaticResource ParchmentBrush}"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Padding" Value="14,7,30,7"/>
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ComboBox">
-                    <Grid>
-                        <ToggleButton x:Name="ToggleSite"
-                                      Style="{StaticResource ComboBoxToggleButtonStyle}"
-                                      IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
-                                      Focusable="False" ClickMode="Press"/>
-                        <ContentPresenter x:Name="ContentSite" IsHitTestVisible="False"
-                                          Content="{TemplateBinding SelectionBoxItem}"
-                                          ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                                          Margin="{TemplateBinding Padding}"
-                                          VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                        <Path Data="M0,0 L6,6 L12,0" Stroke="{StaticResource MutedSlateBrush}"
-                              StrokeThickness="1.6" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,12,0"
-                              IsHitTestVisible="False"/>
-                        <Popup x:Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}"
-                               AllowsTransparency="True" Focusable="False" PopupAnimation="Fade">
-                            <Border Background="{StaticResource StoneBrush}" BorderBrush="{StaticResource BronzeBrush}"
-                                    BorderThickness="1" CornerRadius="8" Padding="4"
-                                    MinWidth="{TemplateBinding ActualWidth}">
-                                <ScrollViewer MaxHeight="220" SnapsToDevicePixels="True">
-                                    <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained"/>
-                                </ScrollViewer>
-                            </Border>
-                        </Popup>
-                    </Grid>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <!-- Applies to every ComboBoxItem app-wide (only the version picker uses one) -->
-    <Style TargetType="ComboBoxItem">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{StaticResource ParchmentBrush}"/>
-        <Setter Property="Padding" Value="10,6"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="ComboBoxItem">
-                    <Border x:Name="Bg" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
-                        <ContentPresenter/>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsHighlighted" Value="True">
-                            <Setter TargetName="Bg" Property="Background" Value="{StaticResource StoneDarkBrush}"/>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bg" Property="Background" Value="#33FFFFFF"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -157,75 +122,267 @@
         </Setter>
     </Style>
 
-    <!-- Themed checkbox ("Show snapshots") -->
-    <Style x:Key="ThemedCheckBoxStyle" TargetType="CheckBox">
-        <Setter Property="Foreground" Value="{StaticResource MutedSlateBrush}"/>
-        <Setter Property="FontSize" Value="12"/>
+    <Style x:Key="TitleBarCloseButtonStyle" TargetType="Button" BasedOn="{StaticResource TitleBarButtonStyle}">
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#CC2222"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- ===================== PIXEL SIGN-IN BUTTON ===================== -->
+    <Style x:Key="SignInButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource ParchmentBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource DarkTextBrush}"/>
+        <Setter Property="FontFamily" Value="{StaticResource PixelFont}"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="14,4"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Outer" Background="{StaticResource WoodDarkBrush}" Padding="2">
+                        <Border x:Name="Inner" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Image Source="/Assets/logo.png" Width="18" Height="18" Margin="0,0,8,0"/>
+                                <ContentPresenter VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Inner" Property="Background" Value="{StaticResource ParchmentDarkBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Inner" Property="Background" Value="{StaticResource GoldBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== PIXEL LAUNCH BUTTON ===================== -->
+    <Style x:Key="GemButtonStyle" TargetType="Button">
+        <Setter Property="Width" Value="130"/>
+        <Setter Property="Height" Value="130"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <!-- Glow ring -->
+                        <Ellipse x:Name="Glow" Width="140" Height="140" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Ellipse.Fill>
+                                <RadialGradientBrush>
+                                    <GradientStop Color="#66FF8C00" Offset="0.4"/>
+                                    <GradientStop Color="#00FF8C00" Offset="1"/>
+                                </RadialGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+                        <!-- Orange block face -->
+                        <Border x:Name="BlockFace" Width="104" Height="104"
+                                HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#FF9B30" Offset="0"/>
+                                    <GradientStop Color="#E06000" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Effect>
+                                <DropShadowEffect Color="#FF6B00" BlurRadius="18" ShadowDepth="0" Opacity="0.85"/>
+                            </Border.Effect>
+                        </Border>
+                        <!-- Block top face (isometric look) -->
+                        <Border Width="104" Height="16" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,6,0,0">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#FFB84A" Offset="0"/>
+                                    <GradientStop Color="#E07010" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
+                        <!-- Pickaxe icon on block -->
+                        <TextBlock Text="⛏" FontSize="52" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Foreground="{StaticResource WoodDarkBrush}" Margin="0,4,0,0"
+                                   RenderOptions.ClearTypeHint="Enabled"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="BlockFace" Property="Opacity" Value="0.85"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="BlockFace" Property="Opacity" Value="0.7"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="BlockFace" Property="Opacity" Value="0.4"/>
+                            <Setter TargetName="Glow" Property="Opacity" Value="0.2"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== PARCHMENT TEXT BOX ===================== -->
+    <Style x:Key="ParchmentTextBoxStyle" TargetType="TextBox">
+        <Setter Property="Background" Value="{StaticResource ParchmentBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource DarkTextBrush}"/>
+        <Setter Property="CaretBrush" Value="{StaticResource DarkTextBrush}"/>
+        <Setter Property="FontFamily" Value="{StaticResource PixelFont}"/>
+        <Setter Property="FontSize" Value="17"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="8,4"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <!-- Sunken pixel border: dark outer, lighter inner -->
+                    <Border Background="{StaticResource WoodDarkBrush}" Padding="2">
+                        <Border Background="{StaticResource StoneDarkBrush}" Padding="2">
+                            <Border Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                                <ScrollViewer x:Name="PART_ContentHost"/>
+                            </Border>
+                        </Border>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== PIXEL BROWSE BUTTON ===================== -->
+    <Style x:Key="BrowseButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="{StaticResource ParchmentBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource DarkTextBrush}"/>
+        <Setter Property="FontFamily" Value="{StaticResource PixelFont}"/>
+        <Setter Property="FontSize" Value="18"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="10,4"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{StaticResource WoodDarkBrush}" Padding="2">
+                        <Border x:Name="Inner" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Inner" Property="Background" Value="{StaticResource ParchmentDarkBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Inner" Property="Background" Value="{StaticResource GoldBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== PIXEL COMBO BOX ===================== -->
+    <Style x:Key="ComboBoxToggleStyle" TargetType="ToggleButton">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border Background="{StaticResource WoodDarkBrush}" Padding="2">
+                        <Border Background="{StaticResource ParchmentBrush}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="PixelComboBoxStyle" TargetType="ComboBox">
+        <Setter Property="Background" Value="{StaticResource ParchmentBrush}"/>
+        <Setter Property="Foreground" Value="{StaticResource DarkTextBrush}"/>
+        <Setter Property="FontFamily" Value="{StaticResource PixelFont}"/>
+        <Setter Property="FontSize" Value="17"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="8,4,30,4"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Border Background="{StaticResource WoodDarkBrush}" Padding="2">
+                        <Border Background="{StaticResource StoneDarkBrush}" Padding="2">
+                            <Grid Background="{StaticResource ParchmentBrush}">
+                                <ToggleButton x:Name="ToggleSite"
+                                              Style="{StaticResource ComboBoxToggleStyle}"
+                                              IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                              Focusable="False" ClickMode="Press" Opacity="0"/>
+                                <ContentPresenter IsHitTestVisible="False"
+                                                  Content="{TemplateBinding SelectionBoxItem}"
+                                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                  Margin="{TemplateBinding Padding}"
+                                                  VerticalAlignment="Center"/>
+                                <TextBlock Text="▼" Foreground="{StaticResource WoodDarkBrush}"
+                                           HorizontalAlignment="Right" VerticalAlignment="Center"
+                                           Margin="0,0,8,0" FontSize="12" IsHitTestVisible="False"/>
+                                <Popup x:Name="Popup" Placement="Bottom"
+                                       IsOpen="{TemplateBinding IsDropDownOpen}"
+                                       AllowsTransparency="True" Focusable="False">
+                                    <Border Background="{StaticResource WoodDarkBrush}" Padding="2">
+                                        <Border Background="{StaticResource ParchmentBrush}" Padding="2">
+                                            <ScrollViewer MaxHeight="200">
+                                                <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained"/>
+                                            </ScrollViewer>
+                                        </Border>
+                                    </Border>
+                                </Popup>
+                            </Grid>
+                        </Border>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ComboBoxItem">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource DarkTextBrush}"/>
+        <Setter Property="FontFamily" Value="{StaticResource PixelFont}"/>
+        <Setter Property="FontSize" Value="17"/>
+        <Setter Property="Padding" Value="8,4"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBoxItem">
+                    <Border x:Name="Bg" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter TargetName="Bg" Property="Background" Value="{StaticResource GoldBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== PIXEL CHECKBOX ===================== -->
+    <Style x:Key="PixelCheckBoxStyle" TargetType="CheckBox">
+        <Setter Property="Foreground" Value="{StaticResource ParchmentBrush}"/>
+        <Setter Property="FontFamily" Value="{StaticResource PixelFont}"/>
+        <Setter Property="FontSize" Value="19"/>
+        <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="CheckBox">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Border x:Name="Box" Width="16" Height="16" Background="{StaticResource PillBrush}"
-                                BorderBrush="{StaticResource BronzeBrush}" BorderThickness="1" CornerRadius="3">
-                            <Path x:Name="Check" Data="M2,8 L6,12 L14,2" Stroke="{StaticResource EmberBrush}"
-                                  StrokeThickness="2" Visibility="Collapsed"/>
+                        <Border Width="18" Height="18" Background="{StaticResource ParchmentBrush}"
+                                BorderBrush="{StaticResource WoodDarkBrush}" BorderThickness="2">
+                            <TextBlock x:Name="Check" Text="✔" FontSize="13"
+                                       Foreground="{StaticResource DarkTextBrush}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Visibility="Collapsed"/>
                         </Border>
                         <ContentPresenter Margin="8,0,0,0" VerticalAlignment="Center"/>
                     </StackPanel>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="Check" Property="Visibility" Value="Visible"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <!-- Plain themed button (Browse...) -->
-    <Style x:Key="ThemedButtonStyle" TargetType="Button">
-        <Setter Property="Background" Value="{StaticResource PillBrush}"/>
-        <Setter Property="Foreground" Value="{StaticResource ParchmentBrush}"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="Padding" Value="12,5"/>
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Border x:Name="Bg" Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bg" Property="Background" Value="{StaticResource StoneBrush}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <!-- The signature element: a faceted gem launch button. Flat color bands only - no
-         blur or glow, matching the pixel-art cut-gem look rather than a soft halo. -->
-    <Style x:Key="GemButtonStyle" TargetType="Button">
-        <Setter Property="Width" Value="96"/>
-        <Setter Property="Height" Value="96"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Cursor" Value="Hand"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="Button">
-                    <Grid Width="96" Height="96">
-                        <Polygon x:Name="MainFacet" Points="48,0 96,34 79,96 17,96 0,34" Fill="{StaticResource EmberBrush}"/>
-                        <Polygon Points="48,8 73,24 65,52 31,52 23,24" Fill="{StaticResource GoldBrush}"/>
-                        <Polygon Points="40,30 40,66 68,48" Fill="{StaticResource StoneDarkBrush}"/>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="MainFacet" Property="Fill" Value="{StaticResource EmberHoverBrush}"/>
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="MainFacet" Property="Fill" Value="{StaticResource EmberPressedBrush}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
