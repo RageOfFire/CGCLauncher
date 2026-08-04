@@ -157,10 +157,10 @@ public partial class MainWindow : Window
         var uuid        = _session?.Uuid        ?? UuidUtils.OfflineUuid(username);
         var accessToken = _session?.MinecraftAccessToken ?? "0";
 
-        if (string.IsNullOrWhiteSpace(username)) username = "Player";
+        if (string.IsNullOrWhiteSpace(username)) username = "Steve";
 
         if (_session == null)
-            AppendLog($"No Microsoft account — launching as \"{username}\" in Demo Mode.");
+            AppendLog($"No Microsoft account — launching as \"{username}\" in Offline Mode.");
 
         LaunchButton.IsEnabled = false;
         try
@@ -228,7 +228,7 @@ public partial class MainWindow : Window
                 _auth.SignOut();
                 _session = null;
                 SignInButton.Content             = "Sign in with Microsoft";
-                AuthStatusText.Text              = "Offline mode — sign in to unlock full game";
+                AuthStatusText.Text              = "Offline mode";
                 OfflineUsernamePanel.Visibility  = Visibility.Visible;
                 AppendLog("Signed out.");
             }

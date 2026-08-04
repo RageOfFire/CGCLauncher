@@ -122,7 +122,7 @@
                                            Margin="0,0,8,0"/>
                                 <TextBox x:Name="OfflineUsernameBox" Style="{StaticResource ParchmentTextBoxStyle}"
                                          Width="160" Text="Steve" FontSize="17"
-                                         ToolTip="Used for offline/demo mode only. Sign in with Microsoft to use your real username."/>
+                                         ToolTip="Used for offline mode only. Sign in with Microsoft to use your real username."/>
                             </StackPanel>
                         </StackPanel>
 
