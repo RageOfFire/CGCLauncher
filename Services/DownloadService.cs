@@ -35,7 +35,7 @@ public class DownloadService
     public async Task<string> DownloadClientJarAsync(VersionDetails details, string installDir)
     {
         var client = details.Downloads.Client
-                     ?? throw new InvalidOperationException($"Version {details.Id} has no client download entry.");
+                     ?? throw new InvalidOperationException($"Phiên bản {details.Id} không có mục tải xuống cho máy khách.");
 
         var jarPath = Path.Combine(installDir, "versions", details.Id, $"{details.Id}.jar");
         await DownloadFileAsync(client.Url, jarPath, client.Size);
@@ -105,7 +105,7 @@ public class DownloadService
 
         var json = await File.ReadAllTextAsync(assetIndexPath);
         var index = JsonSerializer.Deserialize<AssetIndexFile>(json, JsonOpts)
-                    ?? throw new InvalidOperationException("Failed to parse asset index.");
+                    ?? throw new InvalidOperationException("Không thể phân tích cú pháp chỉ mục tài nguyên.");
 
         var objectsDir = Path.Combine(installDir, "assets", "objects");
 

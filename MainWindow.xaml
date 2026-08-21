@@ -37,7 +37,7 @@
 
                 <!-- Right: sign-in + window controls -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,4,0">
-                    <Button x:Name="SignInButton" Content="Sign in with Microsoft"
+                    <Button x:Name="SignInButton" Content="Đăng nhập với Microsoft"
                             Style="{StaticResource SignInButtonStyle}"
                             Margin="0,0,8,0" Click="SignInButton_Click"
                             shell:WindowChrome.IsHitTestVisibleInChrome="True"/>
@@ -105,7 +105,7 @@
                         <!-- LAUNCH BUTTON -->
                         <StackPanel Grid.Row="2" HorizontalAlignment="Center" Margin="0,2,0,8">
                             <Button x:Name="LaunchButton" Style="{StaticResource GemButtonStyle}" Click="LaunchButton_Click"/>
-                            <TextBlock Text="LAUNCH MINECRAFT: CRYSTALGEMCRAFT"
+                            <TextBlock Text="KHỞI CHẠY MINECRAFT: CRYSTALGEMCRAFT"
                                        FontFamily="{StaticResource PixelFont}" FontSize="16"
                                        Foreground="{StaticResource ParchmentBrush}" HorizontalAlignment="Center"
                                        Margin="0,10,0,6" TextWrapping="Wrap" TextAlignment="Center">
@@ -122,7 +122,7 @@
                                            Margin="0,0,8,0"/>
                                 <TextBox x:Name="OfflineUsernameBox" Style="{StaticResource ParchmentTextBoxStyle}"
                                          Width="160" Text="Steve" FontSize="17"
-                                         ToolTip="Used for offline mode only. Sign in with Microsoft to use your real username."/>
+                                         ToolTip="Chỉ dành cho chế độ ngoại tuyến. Đăng nhập bằng Microsoft để sử dụng tên người dùng thực của bạn."/>
                             </StackPanel>
                         </StackPanel>
 
@@ -214,7 +214,7 @@
             </Border.BorderBrush>
             <Border.BorderThickness>0,3,0,3</Border.BorderThickness>
             <TextBlock x:Name="AuthStatusText"
-                       Text="Offline mode — sign in to unlock full game"
+                       Text="Chế độ ngoại tuyến - đăng nhập để mở khóa toàn bộ trò chơi"
                        FontFamily="{StaticResource PixelFont}" FontSize="18"
                        Foreground="{StaticResource AmberBrush}"
                        HorizontalAlignment="Center">

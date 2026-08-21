@@ -90,7 +90,7 @@ public class AuthService
         var result = loginWindow.ShowDialog();
 
         if (result != true || string.IsNullOrEmpty(loginWindow.AuthCode))
-            throw new AuthException("Sign-in was cancelled.");
+            throw new AuthException("Việc đăng nhập đã bị hủy.");
 
         // Exchange the auth code for MS tokens
         var tokens  = await ExchangeCodeAsync(loginWindow.AuthCode);
@@ -144,10 +144,10 @@ public class AuthService
         var response = await Http.PostAsync(url, content);
         var json     = await response.Content.ReadAsStringAsync();
         var tokens   = JsonSerializer.Deserialize<MsaTokenResponse>(json, JsonOpts)
-                       ?? throw new AuthException("Failed to parse MS token response.");
+                       ?? throw new AuthException("Không thể phân tích phản hồi mã thông báo MS.");
 
         if (!string.IsNullOrEmpty(tokens.Error))
-            throw new AuthException($"MS token error: {tokens.Error} — {tokens.ErrorDescription}");
+            throw new AuthException($"Lỗi mã thông báo MS: {tokens.Error} — {tokens.ErrorDescription}");
 
         return tokens;
     }
@@ -186,15 +186,15 @@ public class AuthService
         if (!resp.IsSuccessStatusCode)
         {
             var raw = await resp.Content.ReadAsStringAsync();
-            throw new AuthException($"Xbox Live auth failed ({(int)resp.StatusCode}): {raw}");
+            throw new AuthException($"Xác thực Xbox Live thất bại ({(int)resp.StatusCode}): {raw}");
         }
 
         var json = await resp.Content.ReadAsStringAsync();
         var xbl  = JsonSerializer.Deserialize<XboxLiveResponse>(json, JsonOpts)
-                   ?? throw new AuthException("Failed to parse Xbox Live response.");
+                   ?? throw new AuthException("Không thể phân tích phản hồi từ Xbox Live.");
 
         if (string.IsNullOrEmpty(xbl.Token))
-            throw new AuthException("Xbox Live returned an empty token.");
+            throw new AuthException("Xbox Live đã trả về một mã thông báo trống.");
 
         return xbl;
     }
@@ -220,19 +220,19 @@ public class AuthService
 
             var detail = err?.XErr switch
             {
-                2148916233 => "No Xbox profile. Visit xbox.com and create one.",
-                2148916235 => "Xbox Live unavailable in your region.",
-                2148916236 or 2148916237 => "Adult consent required in Xbox settings.",
-                2148916238 => "Child account — parent must add it to a family group.",
-                _          => $"XSTS error {err?.XErr} ({(int)resp.StatusCode})."
+                2148916233 => "Không có hồ sơ Xbox. Truy cập xbox.com và tạo một hồ sơ.",
+                2148916235 => "Xbox Live không khả dụng trong khu vực của bạn.",
+                2148916236 or 2148916237 => "Cần sự đồng ý của người lớn trong cài đặt Xbox.",
+                2148916238 => "Tài khoản trẻ em — phụ huynh phải thêm vào nhóm gia đình.",
+                _          => $"Lỗi XSTS {err?.XErr} ({(int)resp.StatusCode})."
             };
 
-            throw new AuthException($"Xbox authentication failed: {detail}");
+            throw new AuthException($"Xác thực Xbox thất bại: {detail}");
         }
 
         var json = await resp.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<XstsResponse>(json, JsonOpts)
-               ?? throw new AuthException("Failed to parse XSTS response.");
+               ?? throw new AuthException("Không thể phân tích phản hồi XSTS.");
     }
 
     // ── Step 4: XSTS → Minecraft token ───────────────────────────────────────
@@ -250,12 +250,12 @@ public class AuthService
         if (!resp.IsSuccessStatusCode)
         {
             var raw = await resp.Content.ReadAsStringAsync();
-            throw new AuthException($"Minecraft auth failed ({(int)resp.StatusCode}): {raw}");
+            throw new AuthException($"Xác thực Minecraft thất bại ({(int)resp.StatusCode}): {raw}");
         }
 
         var json = await resp.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<MinecraftAuthResponse>(json, JsonOpts)
-               ?? throw new AuthException("Failed to parse Minecraft auth response.");
+               ?? throw new AuthException("Không thể phân tích phản hồi xác thực Minecraft.");
     }
 
     // ── Step 5: Profile (also proves ownership) ───────────────────────────────
@@ -270,18 +270,18 @@ public class AuthService
 
         if (resp.StatusCode == System.Net.HttpStatusCode.NotFound)
             throw new AuthException(
-                "This account does not own Minecraft Java Edition.\n" +
-                "Please purchase it at minecraft.net first.");
+                "Tài khoản này không sở hữu Minecraft Java Edition.\n" +
+                "Vui lòng mua nó tại minecraft.net trước.");
 
         if (!resp.IsSuccessStatusCode)
         {
             var raw = await resp.Content.ReadAsStringAsync();
-            throw new AuthException($"Profile fetch failed ({(int)resp.StatusCode}): {raw}");
+            throw new AuthException($"Không thể lấy thông tin hồ sơ ({(int)resp.StatusCode}): {raw}");
         }
 
         var json = await resp.Content.ReadAsStringAsync();
         return JsonSerializer.Deserialize<MinecraftProfile>(json, JsonOpts)
-               ?? throw new AuthException("Failed to parse Minecraft profile.");
+               ?? throw new AuthException("Không thể phân tích thông tin hồ sơ Minecraft.");
     }
 
     // ── Session persistence ───────────────────────────────────────────────────

@@ -57,8 +57,8 @@ public partial class MainWindow : Window
         await Task.WhenAll(vanillaTask, optifineTask);
 
         _manifest = vanillaTask.Result;
-        AppendLog($"Loaded {_manifest.Versions.Count} vanilla versions, " +
-                  $"{_optiFineVersions.Count} OptiFine versions.");
+        AppendLog($"Tải {_manifest.Versions.Count} các phiên bản gốc, " +
+                  $"{_optiFineVersions.Count} phiên bản OptiFine.");
 
         RefreshVersionList();
     }
@@ -70,9 +70,9 @@ public partial class MainWindow : Window
         if (_session != null)
         {
             SignInButton.Content      = _session.Username;
-            AuthStatusText.Text       = $"Signed in as {_session.Username}";
+            AuthStatusText.Text       = $"Đăng nhập với {_session.Username}";
             OfflineUsernamePanel.Visibility = Visibility.Collapsed;
-            AppendLog($"Welcome back, {_session.Username}!");
+            AppendLog($"Chào mừng trở lại, {_session.Username}!");
         }
     }
 
@@ -85,7 +85,7 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             // Non-fatal — OptiFine site may be unreachable
-            Dispatcher.Invoke(() => AppendLog($"Could not fetch OptiFine list: {ex.Message}"));
+            Dispatcher.Invoke(() => AppendLog($"Không thể tải danh sách OptiFine: {ex.Message}"));
             _optiFineVersions = new List<OptiFineVersion>();
         }
     }
@@ -141,14 +141,14 @@ public partial class MainWindow : Window
     {
         if (VersionComboBox.SelectedItem is not LauncherVersion selected)
         {
-            AppendLog("Select a version first.");
+            AppendLog("Hãy chọn phiên bản trước..");
             return;
         }
 
         if (selected.Kind == VersionKind.OptiFine)
         {
-            AppendLog("OptiFine launching isn't supported yet — select a vanilla version for now.");
-            AppendLog($"You can download OptiFine manually from: {selected.OptiFine!.DownloadUrl}");
+            AppendLog("Khởi chạy OptiFine chưa được hỗ trợ - vui lòng chọn một phiên bản gốc cho đến khi có hỗ trợ.");
+            AppendLog($"Bạn có thể tải OptiFine thủ công từ: {selected.OptiFine!.DownloadUrl}");
             return;
         }
 
@@ -160,7 +160,7 @@ public partial class MainWindow : Window
         if (string.IsNullOrWhiteSpace(username)) username = "Steve";
 
         if (_session == null)
-            AppendLog($"No Microsoft account — launching as \"{username}\" in Offline Mode.");
+            AppendLog($"Không có tài khoản Microsoft - khởi chạy với tên \"{username}\" trong chế độ ngoại tuyến.");
 
         LaunchButton.IsEnabled = false;
         try
@@ -168,19 +168,19 @@ public partial class MainWindow : Window
             _serverList.EnsureDefaultServers(installDir, DefaultServers);
 
             var manifestEntry = selected.ManifestEntry!;
-            AppendLog($"Fetching version details for {manifestEntry.Id}...");
+            AppendLog($"Tải chi tiết phiên bản cho {manifestEntry.Id}...");
             var details = await _api.GetVersionDetailsAsync(manifestEntry.Url);
 
-            AppendLog("Downloading client jar...");
+            AppendLog("Đang tải client jar...");
             var clientJar = await _downloader.DownloadClientJarAsync(details, installDir);
 
-            AppendLog("Downloading libraries and natives...");
+            AppendLog("Đang tải thư viện và native...");
             var (libs, nativesDir) = await _downloader.DownloadLibrariesAsync(details, installDir);
 
-            AppendLog("Downloading assets (first run can take a while)...");
+            AppendLog("Đang tải tài nguyên (lần đầu tiên có thể mất một lúc)...");
             await _downloader.DownloadAssetsAsync(details, installDir);
 
-            AppendLog($"Launching as {username}...");
+            AppendLog($"Khởi chạy với tên {username}...");
             var process = _launcher.LaunchGame(
                 details, installDir, libs, clientJar, nativesDir,
                 username, uuid, accessToken);
@@ -189,7 +189,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            AppendLog($"Launch failed: {ex.Message}");
+            AppendLog($"Khởi chạy thất bại: {ex.Message}");
         }
         finally
         {
@@ -220,45 +220,45 @@ public partial class MainWindow : Window
         if (_session != null)
         {
             var result = MessageBox.Show(
-                $"Signed in as {_session.Username}.\n\nSign out?",
-                "Account", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                $"Đã đăng nhập với {_session.Username}.\n\nĐăng xuất?",
+                "Tài khoản", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result == MessageBoxResult.Yes)
             {
                 _auth.SignOut();
                 _session = null;
-                SignInButton.Content             = "Sign in with Microsoft";
-                AuthStatusText.Text              = "Offline mode";
+                SignInButton.Content             = "Đăng nhập bằng Microsoft";
+                AuthStatusText.Text              = "Chế độ ngoại tuyến";
                 OfflineUsernamePanel.Visibility  = Visibility.Visible;
-                AppendLog("Signed out.");
+                AppendLog("Đã đăng xuất.");
             }
             return;
         }
 
         SignInButton.IsEnabled = false;
-        SignInButton.Content   = "Signing in...";
-        AppendLog("Opening Microsoft sign-in...");
+        SignInButton.Content   = "Đang đăng nhập...";
+        AppendLog("Đang mở trang đăng nhập Microsoft...");
 
         try
         {
             _session = await _auth.SignInAsync(this);
 
             SignInButton.Content             = _session.Username;
-            AuthStatusText.Text              = $"Signed in as {_session.Username}";
+            AuthStatusText.Text              = $"Đã đăng nhập với {_session.Username}";
             OfflineUsernamePanel.Visibility  = Visibility.Collapsed;
-            AppendLog($"Signed in as {_session.Username} ({_session.Uuid})");
+            AppendLog($"Đã đăng nhập với {_session.Username} ({_session.Uuid})");
         }
         catch (AuthException ex)
         {
-            AppendLog($"Sign-in failed: {ex.Message}");
-            SignInButton.Content = "Sign in with Microsoft";
-            MessageBox.Show(ex.Message, "Sign-in failed",
+            AppendLog($"Đăng nhập thất bại: {ex.Message}");
+            SignInButton.Content = "Đăng nhập bằng Microsoft";
+            MessageBox.Show(ex.Message, "Đăng nhập thất bại",
                 MessageBoxButton.OK, MessageBoxImage.Warning);
         }
         catch (Exception ex)
         {
-            AppendLog($"Unexpected sign-in error: {ex.Message}");
-            SignInButton.Content = "Sign in with Microsoft";
+            AppendLog($"Lỗi đăng nhập bất thường: {ex.Message}");
+            SignInButton.Content = "Đăng nhập bằng Microsoft";
         }
         finally
         {
@@ -290,7 +290,7 @@ public partial class MainWindow : Window
 
     private void BrowseButton_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new Microsoft.Win32.OpenFolderDialog { Title = "Select install directory" };
+        var dialog = new Microsoft.Win32.OpenFolderDialog { Title = "Chọn thư mục cài đặt" };
         if (dialog.ShowDialog() == true)
             InstallDirTextBox.Text = dialog.FolderName;
     }

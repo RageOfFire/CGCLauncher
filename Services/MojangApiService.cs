@@ -23,13 +23,13 @@ public class MojangApiService
     {
         var json = await Http.GetStringAsync(ManifestUrl);
         return JsonSerializer.Deserialize<VersionManifest>(json, JsonOpts)
-               ?? throw new InvalidOperationException("Failed to parse version manifest.");
+               ?? throw new InvalidOperationException("Không thể phân tích tệp manifest phiên bản.");
     }
 
     public async Task<VersionDetails> GetVersionDetailsAsync(string versionJsonUrl)
     {
         var json = await Http.GetStringAsync(versionJsonUrl);
         return JsonSerializer.Deserialize<VersionDetails>(json, JsonOpts)
-               ?? throw new InvalidOperationException("Failed to parse version details.");
+               ?? throw new InvalidOperationException("Không thể phân tích chi tiết phiên bản.");
     }
 }

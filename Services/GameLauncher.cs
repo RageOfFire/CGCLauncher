@@ -79,7 +79,7 @@ public class GameLauncher
         foreach (var a in args) psi.ArgumentList.Add(a);
 
         Directory.CreateDirectory(installDir);
-        return Process.Start(psi) ?? throw new InvalidOperationException("Failed to start the Minecraft process.");
+        return Process.Start(psi) ?? throw new InvalidOperationException("Không thể khởi động tiến trình Minecraft.");
     }
 
     /// <summary>Resolves Mojang's mixed string/conditional-object argument arrays into a flat string list.</summary>
