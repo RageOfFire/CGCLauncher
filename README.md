@@ -1,6 +1,6 @@
 # CGCLauncher
 
-A custom Minecraft launcher built with WPF (.NET 8) for the **Crystal GemCraft** server.
+A custom Minecraft launcher built with WPF (.NET 8) for the **CrystalGemCraft** server.
 
 ## Requirements
 

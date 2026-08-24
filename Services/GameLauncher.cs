@@ -70,11 +70,12 @@ public class GameLauncher
 
         var psi = new ProcessStartInfo
         {
-            FileName = javaPath,
-            WorkingDirectory = installDir,
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
+            FileName              = javaPath,
+            WorkingDirectory      = installDir,
+            UseShellExecute       = false,
+            RedirectStandardOutput= true,
             RedirectStandardError = true,
+            CreateNoWindow        = true,  // prevents a separate console window appearing
         };
         foreach (var a in args) psi.ArgumentList.Add(a);
 

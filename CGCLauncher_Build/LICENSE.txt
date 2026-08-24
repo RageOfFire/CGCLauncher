@@ -1,0 +1,20 @@
+CrystalGemCraft Launcher - End User License Agreement
+======================================================
+
+Copyright (c) CrystalGemCraft. All rights reserved.
+
+This software is provided for use with the CrystalGemCraft Minecraft server.
+
+By installing CGCLauncher you agree to the following:
+
+1. This launcher requires a valid, purchased copy of Minecraft Java Edition
+   and a Microsoft account. It does not grant or bypass any game license.
+
+2. This software is provided "as is", without warranty of any kind.
+
+3. You may not redistribute, reverse-engineer, or resell this software.
+
+4. Minecraft is a trademark of Mojang Studios / Microsoft Corporation.
+   CrystalGemCraft is not affiliated with Mojang or Microsoft.
+
+For questions, visit: https://www.crystalgemcraft.com

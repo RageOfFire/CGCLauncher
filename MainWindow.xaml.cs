@@ -15,14 +15,13 @@ public partial class MainWindow : Window
     private readonly DownloadService   _downloader = new();
     private readonly GameLauncher      _launcher   = new();
     private readonly ServerListService _serverList = new();
-    private readonly OptiFineService   _optiFine   = new();
     private readonly AuthService       _auth       = new();
+    private readonly SettingsService   _settings   = new();
 
-    private VersionManifest?      _manifest;
-    private List<OptiFineVersion> _optiFineVersions = new();
-    private LauncherSession?      _session;  // null = not signed in
+    private VersionManifest?     _manifest;
+    private LauncherSession?     _session;
+    private LauncherSettings     _savedSettings = new();
 
-    // TODO: replace with your real server address
     private static readonly DefaultServerEntry[] DefaultServers =
     {
         new("CrystalGemCraft", "mc.crystalgemcraft.com"),
@@ -32,61 +31,65 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        InstallDirTextBox.Text = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "CGCLauncher");
-
         _downloader.Log += msg => Dispatcher.Invoke(() => AppendLog(msg));
 
         Loaded += async (_, _) =>
         {
-            await LoadAllVersionsAsync();
+            LoadSettings();
+            await LoadVersionsAsync();
             await TrySilentSignInAsync();
         };
     }
 
-    // ── Version loading ──────────────────────────────────────────────────────
+    // ── Settings ──────────────────────────────────────────────────────────────
 
-    private async Task LoadAllVersionsAsync()
+    private void LoadSettings()
     {
-        // Load vanilla manifest and OptiFine list in parallel
-        AppendLog("Fetching version manifest...");
+        _savedSettings = _settings.Load();
 
-        var vanillaTask   = _api.GetVersionManifestAsync();
-        var optifineTask  = TryLoadOptiFineAsync();
+        InstallDirTextBox.Text = !string.IsNullOrEmpty(_savedSettings.InstallDir)
+            ? _savedSettings.InstallDir
+            : Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "CGCLauncher");
 
-        await Task.WhenAll(vanillaTask, optifineTask);
+        ShowSnapshotsCheckBox.IsChecked  = _savedSettings.ShowSnapshots;
+        HideLauncherCheckBox.IsChecked   = _savedSettings.HideLauncherOnLaunch;
 
-        _manifest = vanillaTask.Result;
-        AppendLog($"Tải {_manifest.Versions.Count} các phiên bản gốc, " +
-                  $"{_optiFineVersions.Count} phiên bản OptiFine.");
-
-        RefreshVersionList();
+        if (!string.IsNullOrEmpty(_savedSettings.OfflineUsername))
+            OfflineUsernameBox.Text = _savedSettings.OfflineUsername;
     }
 
-    private async Task TrySilentSignInAsync()
+    private void SaveSettings(string? lastVersionId = null)
     {
-        // Only reads from the token cache — never opens a browser
-        _session = await _auth.TrySilentSignInAsync();
-        if (_session != null)
-        {
-            SignInButton.Content      = _session.Username;
-            AuthStatusText.Text       = $"Đăng nhập với {_session.Username}";
-            OfflineUsernamePanel.Visibility = Visibility.Collapsed;
-            AppendLog($"Chào mừng trở lại, {_session.Username}!");
-        }
+        _savedSettings.InstallDir           = InstallDirTextBox.Text;
+        _savedSettings.ShowSnapshots        = ShowSnapshotsCheckBox.IsChecked == true;
+        _savedSettings.HideLauncherOnLaunch = HideLauncherCheckBox.IsChecked  == true;
+        _savedSettings.OfflineUsername      = OfflineUsernameBox.Text.Trim();
+
+        if (lastVersionId != null)
+            _savedSettings.LastVersionId = lastVersionId;
+
+        _settings.Save(_savedSettings);
     }
 
-    private async Task TryLoadOptiFineAsync()
+    // ── Version loading ───────────────────────────────────────────────────────
+
+    private async Task LoadVersionsAsync()
     {
         try
         {
-            _optiFineVersions = await _optiFine.GetVersionsAsync();
+            AppendLog("Đang tải danh sách phiên bản...");
+            _manifest = await _api.GetVersionManifestAsync();
+            AppendLog($"Đã tải {_manifest.Versions.Count} phiên bản.");
+            RefreshVersionList();
+
+            if (!string.IsNullOrEmpty(_savedSettings.LastVersionId))
+                RestoreLastVersion(_savedSettings.LastVersionId);
         }
         catch (Exception ex)
         {
-            // Non-fatal — OptiFine site may be unreachable
-            Dispatcher.Invoke(() => AppendLog($"Không thể tải danh sách OptiFine: {ex.Message}"));
-            _optiFineVersions = new List<OptiFineVersion>();
+            AppendLog($"Không thể tải danh sách phiên bản: {ex.Message}");
         }
     }
 
@@ -95,81 +98,125 @@ public partial class MainWindow : Window
         if (_manifest == null) return;
 
         var showSnapshots = ShowSnapshotsCheckBox.IsChecked == true;
-        var showOptiFine  = ShowOptiFineCheckBox.IsChecked  == true;
+        var list = _manifest.Versions
+            .Where(v => v.Type == "release" || (showSnapshots && v.Type == "snapshot"))
+            .ToList();
 
-        var list = new List<LauncherVersion>();
-
-        // Vanilla entries
-        foreach (var v in _manifest.Versions)
-        {
-            if (v.Type == "release" || (showSnapshots && v.Type == "snapshot"))
-                list.Add(LauncherVersion.FromVanilla(v));
-        }
-
-        // OptiFine entries appended below vanilla (only when checkbox is ticked)
-        if (showOptiFine)
-        {
-            foreach (var of in _optiFineVersions)
-                list.Add(LauncherVersion.FromOptiFine(of));
-        }
-
-        VersionComboBox.ItemsSource = list;
+        VersionComboBox.ItemsSource   = list;
         VersionComboBox.SelectedIndex = list.Count > 0 ? 0 : -1;
+    }
+
+    private void RestoreLastVersion(string versionId)
+    {
+        if (VersionComboBox.ItemsSource is not List<VersionManifestEntry> list) return;
+
+        var match = list.FirstOrDefault(v =>
+            v.Id.Equals(versionId, StringComparison.OrdinalIgnoreCase));
+
+        if (match != null)
+            VersionComboBox.SelectedItem = match;
     }
 
     private void FilterCheckBox_Changed(object sender, RoutedEventArgs e)
     {
-        // If OptiFine just got ticked and we have no versions yet, try fetching again
-        if (sender == ShowOptiFineCheckBox
-            && ShowOptiFineCheckBox.IsChecked == true
-            && _optiFineVersions.Count == 0)
+        RefreshVersionList();
+        SaveSettings();
+    }
+
+    private void HideLauncherCheckBox_Changed(object sender, RoutedEventArgs e) => SaveSettings();
+
+    // ── Auth ──────────────────────────────────────────────────────────────────
+
+    private async Task TrySilentSignInAsync()
+    {
+        _session = await _auth.TrySilentSignInAsync();
+        if (_session != null)
         {
-            _ = Task.Run(async () =>
+            SignInButton.Content            = _session.Username;
+            AuthStatusText.Text             = $"Đã đăng nhập với {_session.Username}";
+            OfflineUsernamePanel.Visibility = Visibility.Collapsed;
+            AppendLog($"Chào mừng trở lại, {_session.Username}!");
+        }
+    }
+
+    private async void SignInButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_session != null)
+        {
+            var result = MessageBox.Show(
+                $"Đã đăng nhập với {_session.Username}.\n\nĐăng xuất?",
+                "Tài khoản", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
             {
-                await TryLoadOptiFineAsync();
-                Dispatcher.Invoke(RefreshVersionList);
-            });
+                _auth.SignOut();
+                _session = null;
+                SignInButton.Content            = "Đăng nhập bằng Microsoft";
+                AuthStatusText.Text             = "Chế độ ngoại tuyến";
+                OfflineUsernamePanel.Visibility = Visibility.Visible;
+                AppendLog("Đã đăng xuất.");
+            }
             return;
         }
 
-        RefreshVersionList();
+        SignInButton.IsEnabled = false;
+        SignInButton.Content   = "Đang đăng nhập...";
+        AppendLog("Đang mở trang đăng nhập Microsoft...");
+
+        try
+        {
+            _session = await _auth.SignInAsync(this);
+            SignInButton.Content            = _session.Username;
+            AuthStatusText.Text             = $"Đã đăng nhập với {_session.Username}";
+            OfflineUsernamePanel.Visibility = Visibility.Collapsed;
+            AppendLog($"Đã đăng nhập với {_session.Username}");
+        }
+        catch (AuthException ex)
+        {
+            AppendLog($"Đăng nhập thất bại: {ex.Message}");
+            SignInButton.Content = "Đăng nhập bằng Microsoft";
+            MessageBox.Show(ex.Message, "Đăng nhập thất bại",
+                MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        catch (Exception ex)
+        {
+            AppendLog($"Lỗi đăng nhập: {ex.Message}");
+            SignInButton.Content = "Đăng nhập bằng Microsoft";
+        }
+        finally
+        {
+            SignInButton.IsEnabled = true;
+        }
     }
 
-    // ── Launch ───────────────────────────────────────────────────────────────
+    // ── Launch ────────────────────────────────────────────────────────────────
 
     private async void LaunchButton_Click(object sender, RoutedEventArgs e)
     {
-        if (VersionComboBox.SelectedItem is not LauncherVersion selected)
+        if (VersionComboBox.SelectedItem is not VersionManifestEntry selected)
         {
-            AppendLog("Hãy chọn phiên bản trước..");
-            return;
-        }
-
-        if (selected.Kind == VersionKind.OptiFine)
-        {
-            AppendLog("Khởi chạy OptiFine chưa được hỗ trợ - vui lòng chọn một phiên bản gốc cho đến khi có hỗ trợ.");
-            AppendLog($"Bạn có thể tải OptiFine thủ công từ: {selected.OptiFine!.DownloadUrl}");
+            AppendLog("Hãy chọn phiên bản trước.");
             return;
         }
 
         var installDir  = InstallDirTextBox.Text;
-        var username    = _session?.Username    ?? OfflineUsernameBox.Text.Trim().Replace(" ", "_");
-        var uuid        = _session?.Uuid        ?? UuidUtils.OfflineUuid(username);
+        var username    = _session?.Username ?? OfflineUsernameBox.Text.Trim().Replace(" ", "_");
+        var uuid        = _session?.Uuid     ?? UuidUtils.OfflineUuid(username);
         var accessToken = _session?.MinecraftAccessToken ?? "0";
 
         if (string.IsNullOrWhiteSpace(username)) username = "Steve";
 
         if (_session == null)
-            AppendLog($"Không có tài khoản Microsoft - khởi chạy với tên \"{username}\" trong chế độ ngoại tuyến.");
+            AppendLog($"Không có tài khoản — khởi chạy với tên \"{username}\" (chế độ ngoại tuyến).");
 
         LaunchButton.IsEnabled = false;
+
         try
         {
             _serverList.EnsureDefaultServers(installDir, DefaultServers);
 
-            var manifestEntry = selected.ManifestEntry!;
-            AppendLog($"Tải chi tiết phiên bản cho {manifestEntry.Id}...");
-            var details = await _api.GetVersionDetailsAsync(manifestEntry.Url);
+            AppendLog($"Đang tải chi tiết phiên bản {selected.Id}...");
+            var details = await _api.GetVersionDetailsAsync(selected.Url);
 
             AppendLog("Đang tải client jar...");
             var clientJar = await _downloader.DownloadClientJarAsync(details, installDir);
@@ -177,14 +224,15 @@ public partial class MainWindow : Window
             AppendLog("Đang tải thư viện và native...");
             var (libs, nativesDir) = await _downloader.DownloadLibrariesAsync(details, installDir);
 
-            AppendLog("Đang tải tài nguyên (lần đầu tiên có thể mất một lúc)...");
+            AppendLog("Đang tải tài nguyên (lần đầu có thể mất vài phút)...");
             await _downloader.DownloadAssetsAsync(details, installDir);
 
-            AppendLog($"Khởi chạy với tên {username}...");
+            AppendLog($"Đang khởi chạy {selected.Id} với tên {username}...");
             var process = _launcher.LaunchGame(
                 details, installDir, libs, clientJar, nativesDir,
                 username, uuid, accessToken);
 
+            SaveSettings(selected.Id);
             PipeOutput(process);
         }
         catch (Exception ex)
@@ -199,103 +247,81 @@ public partial class MainWindow : Window
 
     private void PipeOutput(System.Diagnostics.Process process)
     {
+        bool shouldHide = HideLauncherCheckBox.IsChecked == true;
+        if (shouldHide)
+            _ = Task.Delay(2000).ContinueWith(_ => Dispatcher.Invoke(Hide));
+
         _ = Task.Run(async () =>
         {
             string? line;
             while ((line = await process.StandardOutput.ReadLineAsync()) != null)
                 Dispatcher.Invoke(() => AppendLog(line));
         });
+
         _ = Task.Run(async () =>
         {
             string? line;
             while ((line = await process.StandardError.ReadLineAsync()) != null)
                 Dispatcher.Invoke(() => AppendLog(line));
         });
-    }
 
-    // ── Auth ─────────────────────────────────────────────────────────────────
-
-    private async void SignInButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (_session != null)
+        _ = Task.Run(async () =>
         {
-            var result = MessageBox.Show(
-                $"Đã đăng nhập với {_session.Username}.\n\nĐăng xuất?",
-                "Tài khoản", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-            if (result == MessageBoxResult.Yes)
+            await process.WaitForExitAsync();
+            Dispatcher.Invoke(() =>
             {
-                _auth.SignOut();
-                _session = null;
-                SignInButton.Content             = "Đăng nhập bằng Microsoft";
-                AuthStatusText.Text              = "Chế độ ngoại tuyến";
-                OfflineUsernamePanel.Visibility  = Visibility.Visible;
-                AppendLog("Đã đăng xuất.");
-            }
-            return;
-        }
-
-        SignInButton.IsEnabled = false;
-        SignInButton.Content   = "Đang đăng nhập...";
-        AppendLog("Đang mở trang đăng nhập Microsoft...");
-
-        try
-        {
-            _session = await _auth.SignInAsync(this);
-
-            SignInButton.Content             = _session.Username;
-            AuthStatusText.Text              = $"Đã đăng nhập với {_session.Username}";
-            OfflineUsernamePanel.Visibility  = Visibility.Collapsed;
-            AppendLog($"Đã đăng nhập với {_session.Username} ({_session.Uuid})");
-        }
-        catch (AuthException ex)
-        {
-            AppendLog($"Đăng nhập thất bại: {ex.Message}");
-            SignInButton.Content = "Đăng nhập bằng Microsoft";
-            MessageBox.Show(ex.Message, "Đăng nhập thất bại",
-                MessageBoxButton.OK, MessageBoxImage.Warning);
-        }
-        catch (Exception ex)
-        {
-            AppendLog($"Lỗi đăng nhập bất thường: {ex.Message}");
-            SignInButton.Content = "Đăng nhập bằng Microsoft";
-        }
-        finally
-        {
-            SignInButton.IsEnabled = true;
-        }
+                if (shouldHide)
+                {
+                    Show();
+                    WindowState = WindowState.Normal;
+                    Activate();
+                }
+                AppendLog("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+                AppendLog("Minecraft đã đóng.");
+            });
+        });
     }
 
-    // ── Title bar ────────────────────────────────────────────────────────────
+    // ── Title bar ─────────────────────────────────────────────────────────────
 
     private void TitleBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (e.ClickCount == 2)
         {
-            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+            WindowState = WindowState == WindowState.Maximized
+                ? WindowState.Normal : WindowState.Maximized;
             return;
         }
-        if (e.ButtonState == MouseButtonState.Pressed)
-            DragMove();
+        if (e.ButtonState == MouseButtonState.Pressed) DragMove();
     }
 
-    private void MinimizeButton_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+    private void MinimizeButton_Click(object sender, RoutedEventArgs e) =>
+        WindowState = WindowState.Minimized;
 
     private void MaximizeButton_Click(object sender, RoutedEventArgs e) =>
-        WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        WindowState = WindowState == WindowState.Maximized
+            ? WindowState.Normal : WindowState.Maximized;
 
-    private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
+    private void CloseButton_Click(object sender, RoutedEventArgs e)
+    {
+        SaveSettings();
+        Close();
+    }
 
-    // ── Browse ───────────────────────────────────────────────────────────────
+    // ── Browse ────────────────────────────────────────────────────────────────
 
     private void BrowseButton_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new Microsoft.Win32.OpenFolderDialog { Title = "Chọn thư mục cài đặt" };
+        var dialog = new Microsoft.Win32.OpenFolderDialog
+            { Title = "Chọn thư mục cài đặt" };
         if (dialog.ShowDialog() == true)
+        {
             InstallDirTextBox.Text = dialog.FolderName;
+            SaveSettings();
+        }
     }
 
-    // ── Log ──────────────────────────────────────────────────────────────────
+    // ── Log ───────────────────────────────────────────────────────────────────
 
     private void AppendLog(string message)
     {

@@ -65,6 +65,7 @@
                             <RowDefinition Height="Auto"/>  <!-- Path row -->
                             <RowDefinition Height="*"/>     <!-- Console -->
                             <RowDefinition Height="Auto"/>  <!-- Bottom controls -->
+                            <RowDefinition Height="Auto"/>  <!-- Options row -->
                         </Grid.RowDefinitions>
 
                         <!-- BANNER -->
@@ -158,22 +159,31 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <ComboBox x:Name="VersionComboBox" Grid.Column="0"
                                       Style="{StaticResource PixelComboBoxStyle}"
-                                      DisplayMemberPath="DisplayName" Margin="0,0,10,0"/>
+                                      DisplayMemberPath="Id" Margin="0,0,10,0"/>
                             <CheckBox x:Name="ShowSnapshotsCheckBox" Grid.Column="1"
                                       Content="Snapshot" Style="{StaticResource PixelCheckBoxStyle}"
-                                      VerticalAlignment="Center" Margin="0,0,14,0"
-                                      Checked="FilterCheckBox_Changed"
-                                      Unchecked="FilterCheckBox_Changed"/>
-                            <CheckBox x:Name="ShowOptiFineCheckBox" Grid.Column="2"
-                                      Content="OptiFine" Style="{StaticResource PixelCheckBoxStyle}"
                                       VerticalAlignment="Center"
                                       Checked="FilterCheckBox_Changed"
                                       Unchecked="FilterCheckBox_Changed"/>
                         </Grid>
+
+                        <!-- OPTIONS ROW -->
+                        <Border Grid.Row="6" Margin="0,6,0,0"
+                                Background="{StaticResource WoodDarkBrush}" Padding="2">
+                            <Border Background="{StaticResource StoneDarkBrush}" Padding="2">
+                                <Border Background="{StaticResource ConsoleBgBrush}" Padding="10,6">
+                                    <CheckBox x:Name="HideLauncherCheckBox"
+                                              Content="Ẩn launcher khi game khởi chạy"
+                                              Style="{StaticResource PixelCheckBoxStyle}"
+                                              ToolTip="Launcher sẽ tự ẩn khi Minecraft bắt đầu và hiện lại khi game đóng."
+                                              Checked="HideLauncherCheckBox_Changed"
+                                              Unchecked="HideLauncherCheckBox_Changed"/>
+                                </Border>
+                            </Border>
+                        </Border>
 
                     </Grid>
                 </Border>
