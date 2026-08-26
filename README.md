@@ -34,7 +34,7 @@ Bạn có thể tự do:
 | Công cụ | Link tải |
 |---------|---------|
 | .NET 8 SDK | https://dotnet.microsoft.com/download/dotnet/8.0 |
-| Java 17+ | Cần để chạy Minecraft (không cần để build launcher) |
+| Java       | Cần để chạy Minecraft (không cần để build launcher hoặc để launcher tự cài cho bạn) |
 
 ## Build & chạy
 
