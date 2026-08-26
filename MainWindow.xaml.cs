@@ -17,6 +17,7 @@ public partial class MainWindow : Window
     private readonly ServerListService _serverList = new();
     private readonly AuthService       _auth       = new();
     private readonly SettingsService   _settings   = new();
+    private readonly JavaRuntimeService _java      = new();
 
     private VersionManifest?     _manifest;
     private LauncherSession?     _session;
@@ -32,6 +33,7 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         _downloader.Log += msg => Dispatcher.Invoke(() => AppendLog(msg));
+        _java.Log       += msg => Dispatcher.Invoke(() => AppendLog(msg));
 
         Loaded += async (_, _) =>
         {
@@ -227,10 +229,13 @@ public partial class MainWindow : Window
             AppendLog("Đang tải tài nguyên (lần đầu có thể mất vài phút)...");
             await _downloader.DownloadAssetsAsync(details, installDir);
 
+            AppendLog("Đang kiểm tra Java runtime...");
+            var javaPath = await _java.EnsureJavaAsync(details, installDir);
+
             AppendLog($"Đang khởi chạy {selected.Id} với tên {username}...");
             var process = _launcher.LaunchGame(
                 details, installDir, libs, clientJar, nativesDir,
-                username, uuid, accessToken);
+                username, uuid, accessToken, javaPath);
 
             SaveSettings(selected.Id);
             PipeOutput(process);
