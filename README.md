@@ -15,6 +15,16 @@
 
 ---
 
+### 💼 Work With Me
+
+Enjoying this project or need something custom?
+
+I'm available for freelance work, whether it's **building something new, fixing issues, or improving existing projects**.
+
+[![Hire Me on Fiverr](https://img.shields.io/badge/Hire_Me_on-Fiverr-1DBF73?style=for-the-badge)](https://www.fiverr.com/s/0DDdX0r)
+
+---
+
 ## Mã nguồn mở
 
 CGCLauncher là **phần mềm mã nguồn mở** được phát hành theo giấy phép **MIT**.
